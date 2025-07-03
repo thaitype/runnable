@@ -2,6 +2,7 @@ import { Runnable } from '@thaitype/runnable'
 
 const runner = new Runnable({
   stateFilePath: 'mac-setup-state.json',
+  enableStateCheck: true,
 })
 
 await runner.run([

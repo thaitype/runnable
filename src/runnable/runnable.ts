@@ -1,4 +1,3 @@
-import { execa } from 'execa';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import type { MaybePromise } from 'src/types.js';
@@ -6,6 +5,7 @@ import { merge } from 'lodash-es';
 import { PrettyLogger, type ILogger } from '@thaitype/core-utils';
 import c from 'ansis';
 import { executeCommand } from './execute.js';
+import type { Options as ExecaOptions  } from 'execa';
 
 export const MARK_CHECK = c.green('✔');
 
@@ -30,6 +30,7 @@ export interface RunnableOptions {
   stateFilePath: string;
   logger: ILogger;
   enableStateCheck: boolean;
+  execaOptions?: ExecaOptions;
 }
 
 export const defaultRunnableOptions: RunnableOptions = {
@@ -68,6 +69,7 @@ export class Runnable {
     const whenShell: ShellFn = async (cmd) => {
       await executeCommand(cmd, {
         logger: this.logger,
+        execaOptions: this.options.execaOptions,
       });
     };
 
@@ -90,10 +92,10 @@ export class Runnable {
       this.logger.info(`Running step: ${name}`);
       try {
         if (shell) {
-          const subprocess = execa(shell, { shell: true });
-          subprocess.stdout?.pipe(process.stdout);
-          subprocess.stderr?.pipe(process.stderr);
-          await subprocess;
+          await executeCommand(shell, {
+            logger: this.logger,
+            execaOptions: this.options.execaOptions,
+          });
         }
 
         if (this.options.enableStateCheck) {

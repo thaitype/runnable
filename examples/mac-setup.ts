@@ -1,5 +1,4 @@
 import { Runnable } from '@thaitype/runnable'
-import { execaCommand } from 'execa'
 
 const runner = new Runnable({
   stateFilePath: 'mac-setup-state.json',
@@ -22,15 +21,6 @@ await runner.run([
         return true // Homebrew is not installed, proceed with installation
       }
     },
-
-    // when: async () => {
-    //   try {
-    //     await execaCommand('brew --version')
-    //     return false // พบแล้ว = ไม่ต้องรัน
-    //   } catch {
-    //     return true // ไม่เจอ = ต้องรัน
-    //   }
-    // },
     shell: `
       echo "Installing Homebrew..."
       echo "Please enter your password if prompted."

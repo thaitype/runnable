@@ -61,18 +61,20 @@ export class Runnable {
   }
 
   async run(steps: RunnableStep[]) {
-    this.logger.log('--------------------------------');
+    this.logger.log('');
     this.logger.info(`Runnable task "${this.options.name}"`);
-    this.logger.log('--------------------------------\n');
+    this.logger.log('\n');
 
     const whenShell: ShellFn = async (cmd) => {
-      await executeCommand(cmd);
+      await executeCommand(cmd, {
+        logger: this.logger,
+      });
     };
 
     for (const step of steps) {
       const { name, shell, when, skip_if_done } = step;
 
-      this.logger.log('--------------------------------');
+      this.logger.log('---------------------------------------');
       this.logger.info(`Start step: ${name}`);
 
       if (this.options.enableStateCheck && skip_if_done && this.state[name]) {
@@ -104,9 +106,8 @@ export class Runnable {
         this.logger.error(`[${name}] failed:`, this.serializeError(err));
         break;
       }
-      this.logger.log('--------------------------------\n');
+      console.log('\n');
     }
-    this.logger.log('--------------------------------\n');
   }
 
   serializeError(err: unknown): Record<string, unknown> {

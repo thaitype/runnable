@@ -1,0 +1,86 @@
+{
+  "name": "@thaitype/runnable",
+  "type": "module",
+  "version": "0.0.0",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./logger": {
+      "types": "./dist/dts/logger/index.d.ts",
+      "import": "./dist/esm/logger/index.js",
+      "default": "./dist/cjs/logger/index.js"
+    },
+    "./error": {
+      "types": "./dist/dts/error/index.d.ts",
+      "import": "./dist/esm/error/index.js",
+      "default": "./dist/cjs/error/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "src",
+    "package.json"
+  ],
+  "scripts": {
+    "all": "run-s check test build",
+    "check": "tsc -b tsconfig.json",
+    "test": "vitest run",
+    "check:watch": "tsc -b tsconfig.json -w",
+    "format": "prettier --write src",
+    "copy-package-json": "cp package.json dist/ && npx tsx scripts/remove-type-key.ts dist",
+    "release": "run-s build && changeset publish",
+    "build": " run-s format && run-s build-esm && run-s build-cjs && run-s build-annotate",
+    "build-esm": "tsc -b tsconfig.build.json",
+    "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+    "upgrade-deps": "npx taze -r --interactive",
+    "changeset": "changeset",
+    "check-deps": "npx taze -r"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.27.2",
+    "@babel/core": "^7.27.1",
+    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+    "@changesets/cli": "^2.29.4",
+    "@type-challenges/utils": "^0.1.1",
+    "@types/node": "^22.15.19",
+    "babel-plugin-annotate-pure-calls": "^0.5.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.5.3",
+    "@types/lodash-es": "^4.17.12",
+    "vitest": "^3.1.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/runnable.git"
+  },
+  "homepage": "https://github.com/thaitype/runnable",
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "arrowParens": "avoid"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "ansis": "^4.0.0"
+  }
+}

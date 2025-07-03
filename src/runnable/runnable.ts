@@ -29,12 +29,14 @@ export interface RunnableOptions {
   name: string
   stateFilePath: string;
   logger: ILogger;
+  enableStateCheck: boolean;
 }
 
 export const defaultRunnableOptions: RunnableOptions = {
   name: 'No Name',
   stateFilePath: 'step-state.json',
   logger: new PrettyLogger(),
+  enableStateCheck: false,
 };
 
 export class Runnable {
@@ -47,24 +49,33 @@ export class Runnable {
     this.options = merge({}, defaultRunnableOptions, options);
     this.logger = this.options.logger;
     this.stateFilePath = path.resolve(this.options.stateFilePath);
-    this.state = existsSync(this.stateFilePath) ? JSON.parse(readFileSync(this.stateFilePath, 'utf-8')) : {};
+
+    this.state = this.options.enableStateCheck && existsSync(this.stateFilePath)
+      ? JSON.parse(readFileSync(this.stateFilePath, 'utf-8'))
+      : {};
   }
 
   private saveState() {
+    if (!this.options.enableStateCheck) return; // ✅ ข้ามถ้าไม่เปิด
     writeFileSync(this.stateFilePath, JSON.stringify(this.state, null, 2), 'utf-8');
   }
 
   async run(steps: RunnableStep[]) {
-    this.logger.info(`Running steps for task "${this.options.name}"`);
+    this.logger.log('--------------------------------');
+    this.logger.info(`Runnable task "${this.options.name}"`);
+    this.logger.log('--------------------------------\n');
 
     const whenShell: ShellFn = async (cmd) => {
-      await executeCommand(cmd)
+      await executeCommand(cmd);
     };
 
     for (const step of steps) {
       const { name, shell, when, skip_if_done } = step;
 
-      if (skip_if_done && this.state[name]) {
+      this.logger.log('--------------------------------');
+      this.logger.info(`Start step: ${name}`);
+
+      if (this.options.enableStateCheck && skip_if_done && this.state[name]) {
         this.logger.log(`${MARK_CHECK} [${name}] already done. Skipping.`);
         continue;
       }
@@ -82,14 +93,20 @@ export class Runnable {
           subprocess.stderr?.pipe(process.stderr);
           await subprocess;
         }
-        this.state[name] = true;
-        this.saveState();
-        this.logger.log(`${MARK_CHECK}  [${name}] completed`);
+
+        if (this.options.enableStateCheck) {
+          this.state[name] = true;
+          this.saveState();
+        }
+
+        this.logger.log(`${MARK_CHECK} [${name}] completed`);
       } catch (err) {
         this.logger.error(`[${name}] failed:`, this.serializeError(err));
         break;
       }
+      this.logger.log('--------------------------------\n');
     }
+    this.logger.log('--------------------------------\n');
   }
 
   serializeError(err: unknown): Record<string, unknown> {

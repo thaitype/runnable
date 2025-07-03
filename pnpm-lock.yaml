@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@thaitype/core-utils':
+        specifier: ^1.1.1
+        version: 1.1.1(typescript@5.8.3)
       ansis:
         specifier: ^4.0.0
         version: 4.0.0
@@ -494,6 +497,11 @@ packages:
     resolution: {integrity: sha512-h1J+Yzjo/X+0EAvR2kIXJDuTuyT7drc+t2ALY0nIcGPbTatNOf0VWdhEA2Z4AAjv6X1NJV7SYo5oCTYRJhSlVA==}
     cpu: [x64]
     os: [win32]
+
+  '@thaitype/core-utils@1.1.1':
+    resolution: {integrity: sha512-blFfHt48iYy9tOql6LMap7rm6NTBBMG2x4AEeMCFeRgex4WZy15hLJPOyy/5i0NFewWA5m/DZTCA7Y4NLs6VYw==}
+    peerDependencies:
+      typescript: ^5.7.2
 
   '@type-challenges/utils@0.1.1':
     resolution: {integrity: sha512-A7ljYfBM+FLw+NDyuYvGBJiCEV9c0lPWEAdzfOAkb3JFqfLl0Iv/WhWMMARHiRKlmmiD1g8gz/507yVvHdQUYA==}
@@ -2137,6 +2145,12 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.41.0':
     optional: true
+
+  '@thaitype/core-utils@1.1.1(typescript@5.8.3)':
+    dependencies:
+      ansis: 4.0.0
+      lodash-es: 4.17.21
+      typescript: 5.8.3
 
   '@type-challenges/utils@0.1.1': {}
 

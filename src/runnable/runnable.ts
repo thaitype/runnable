@@ -5,10 +5,14 @@ import type { MaybePromise } from 'src/types.js';
 import { merge } from 'lodash-es';
 import { PrettyLogger, type ILogger } from '@thaitype/core-utils';
 import c from 'ansis';
+import { executeCommand } from './execute.js';
 
 export const MARK_CHECK = c.green('✔');
 
-type WhenFn = () => MaybePromise<boolean>;
+type ShellFn = (command: string) => Promise<void>
+type WhenFn = (shell: ShellFn) => MaybePromise<boolean>
+
+
 
 export interface RunnableStep {
   name: string;
@@ -22,12 +26,13 @@ interface StateFile {
 }
 
 export interface RunnableOptions {
-  // Option
+  name: string
   stateFilePath: string;
   logger: ILogger;
 }
 
 export const defaultRunnableOptions: RunnableOptions = {
+  name: 'No Name',
   stateFilePath: 'step-state.json',
   logger: new PrettyLogger(),
 };
@@ -50,15 +55,21 @@ export class Runnable {
   }
 
   async run(steps: RunnableStep[]) {
+    this.logger.info(`Running steps for task "${this.options.name}"`);
+
+    const whenShell: ShellFn = async (cmd) => {
+      await executeCommand(cmd)
+    };
+
     for (const step of steps) {
       const { name, shell, when, skip_if_done } = step;
 
       if (skip_if_done && this.state[name]) {
-        this.logger.log(`${MARK_CHECK}  [${name}] already done. Skipping.`);
+        this.logger.log(`${MARK_CHECK} [${name}] already done. Skipping.`);
         continue;
       }
 
-      if (when && !(await when())) {
+      if (when && !(await when(whenShell))) {
         this.logger.info(`[${name}] skipped by condition`);
         continue;
       }

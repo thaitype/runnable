@@ -35,6 +35,7 @@
     "test": "vitest run",
     "check:watch": "tsc -b tsconfig.json -w",
     "format": "prettier --write src",
+    "dev": "tsc -b tsconfig.build.json -w",
     "copy-package-json": "cp package.json dist/ && npx tsx scripts/remove-type-key.ts dist",
     "release": "run-s build && changeset publish",
     "build": " run-s format && run-s build-esm && run-s build-cjs && run-s build-annotate",

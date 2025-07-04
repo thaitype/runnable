@@ -12,6 +12,11 @@ await runner.run([
     skipIfDone: true,
   },
   {
+    name: 'echo from native shell',
+    nativeShell: 'echo "Hello from step 1"',
+    skipIfDone: true,
+  },
+  {
     name: 'install-homebrew',
     skipIfDone: true,
     when: async shell => {

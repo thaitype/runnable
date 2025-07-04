@@ -9,7 +9,7 @@ import { executeCommand } from './execute.js';
 /**
  * Execute native shell by creating a temp script file.
  */
-export async function executeNativeShell(nativeShell: string,  options: {
+export async function executeNativeShell(nativeShell: string, options: {
   platform: NodeJS.Platform,
   logger?: ILogger,
   execaOptions?: ExecaOptions
@@ -24,6 +24,10 @@ export async function executeNativeShell(nativeShell: string,  options: {
   const shellCommand = options.platform === 'win32'
     ? `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`
     : `bash "${scriptPath}"`;
+
+  options.logger?.debug(`------------------------------------------------`);
+  options.logger?.debug(`Executing native shell script: \n${nativeShell}`);
+  options.logger?.debug(`------------------------------------------------`);
 
   try {
     await executeCommand(shellCommand, options);

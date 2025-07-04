@@ -9,11 +9,16 @@ await runner.run([
   {
     name: 'echo hello',
     shell: 'echo "Hello from step 1"',
-    skip_if_done: true,
+    skipIfDone: true,
+  },
+  {
+    name: 'echo from native shell',
+    nativeShell: 'echo "Hello from step 1"',
+    skipIfDone: true,
   },
   {
     name: 'install-homebrew',
-    skip_if_done: true,
+    skipIfDone: true,
     when: async shell => {
       try {
         await shell('brew --version');
@@ -27,4 +32,5 @@ await runner.run([
       echo "Please enter your password if prompted."
     `,
   },
+
 ])

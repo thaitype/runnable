@@ -19,7 +19,7 @@ await runner.run([
   {
     name: 'Ensure C:\\Temp folder exists',
     shell: `if (!(Test-Path 'C:\\Temp')) { New-Item -ItemType Directory -Force -Path 'C:\\Temp' }`,
-    skip_if_done: true,
+    skipIfDone: true,
     when: async (shell) => {
       try {
         await shell(`Test-Path 'C:\\Temp'`)
@@ -32,12 +32,20 @@ await runner.run([
   {
     name: 'Print PowerShell version',
     shell: `Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"`,
-    skip_if_done: false,
+    skipIfDone: false,
+  },
+  {
+    name: 'Reload PATH via ps1 script',
+    nativeShell: `
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
+                    [System.Environment]::GetEnvironmentVariable("Path", "User")
+    `,
+    skipIfDone: false,
   },
   {
     name: 'Check winget availability',
     shell: `winget --version`,
-    skip_if_done: true,
+    skipIfDone: true,
     when: async (shell) => {
       try {
         await shell(`winget --version`)

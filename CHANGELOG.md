@@ -1,5 +1,11 @@
 # @thaitype/runnable
 
+## 0.2.0
+
+### Minor Changes
+
+- a5a0400: Support native shell, and fix option name convention to camelCase
+
 ## 0.1.0
 
 ### Minor Changes

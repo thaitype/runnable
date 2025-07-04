@@ -35,6 +35,14 @@ await runner.run([
     skipIfDone: false,
   },
   {
+    name: 'Reload PATH via ps1 script',
+    nativeShell: `
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
+                    [System.Environment]::GetEnvironmentVariable("Path", "User")
+    `,
+    skipIfDone: false,
+  },
+  {
     name: 'Check winget availability',
     shell: `winget --version`,
     skipIfDone: true,

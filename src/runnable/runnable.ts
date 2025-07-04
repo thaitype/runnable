@@ -5,7 +5,8 @@ import { merge } from 'lodash-es';
 import { PrettyLogger, type ILogger } from '@thaitype/core-utils';
 import c from 'ansis';
 import { executeCommand } from './execute.js';
-import type { Options as ExecaOptions  } from 'execa';
+import type { Options as ExecaOptions } from 'execa';
+import { executeNativeShell } from './nativeShell.js';
 
 export const MARK_CHECK = c.green('✔');
 
@@ -18,6 +19,7 @@ export interface RunnableStep {
   name: string;
   shell?: string;
   when?: WhenFn;
+  nativeShell?: string;
   skipIfDone?: boolean;
 }
 
@@ -57,7 +59,7 @@ export class Runnable {
   }
 
   private saveState() {
-    if (!this.options.enableStateCheck) return; // ✅ ข้ามถ้าไม่เปิด
+    if (!this.options.enableStateCheck) return;
     writeFileSync(this.stateFilePath, JSON.stringify(this.state, null, 2), 'utf-8');
   }
 
@@ -74,7 +76,7 @@ export class Runnable {
     };
 
     for (const step of steps) {
-      const { name, shell, when, skipIfDone } = step;
+      const { name, shell, when, skipIfDone, nativeShell } = step;
 
       this.logger.log('---------------------------------------');
       this.logger.info(`Start step: ${name}`);
@@ -93,6 +95,12 @@ export class Runnable {
       try {
         if (shell) {
           await executeCommand(shell, {
+            logger: this.logger,
+            execaOptions: this.options.execaOptions,
+          });
+        } else if (nativeShell) {
+          await executeNativeShell(nativeShell, {
+            platform: process.platform,
             logger: this.logger,
             execaOptions: this.options.execaOptions,
           });

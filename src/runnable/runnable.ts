@@ -18,7 +18,7 @@ export interface RunnableStep {
   name: string;
   shell?: string;
   when?: WhenFn;
-  skip_if_done?: boolean;
+  skipIfDone?: boolean;
 }
 
 interface StateFile {
@@ -74,12 +74,12 @@ export class Runnable {
     };
 
     for (const step of steps) {
-      const { name, shell, when, skip_if_done } = step;
+      const { name, shell, when, skipIfDone } = step;
 
       this.logger.log('---------------------------------------');
       this.logger.info(`Start step: ${name}`);
 
-      if (this.options.enableStateCheck && skip_if_done && this.state[name]) {
+      if (this.options.enableStateCheck && skipIfDone && this.state[name]) {
         this.logger.log(`${MARK_CHECK} [${name}] already done. Skipping.`);
         continue;
       }
